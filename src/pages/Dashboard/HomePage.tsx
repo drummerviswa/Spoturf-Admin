@@ -1,16 +1,57 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import CardDataStats from '../../components/CardDataStats';
 import ChartOne from '../../components/Charts/ChartOne';
-import ChartTwo from '../../components/Charts/ChartTwo';
+import makeRequest from '../../axios';
 
+type Turf = {
+  TID: number;
+  turfName: string;
+  address: string;
+  price: number;
+  maps: string;
+  startTime: string;
+  endTime: string;
+  gamesAvailable: string[];
+  amenities: string[];
+  images: string[];
+  status: 'Active' | 'Inactive';
+  username: string;
+  password: string;
+};
 const HomePage: React.FC = () => {
+  const [turfs, setTurfs] = useState<Turf[]>([]);
+  const [customer, setCustomer] = useState([]);
+  useEffect(() => {
+    const fetchTurfs = async () => {
+      try {
+        const response = await makeRequest.get('/turfs');
+        console.log('Fetched Turfs:', response.data);
+        setTurfs(response.data);
+      } catch (error) {
+        console.error('Error fetching turfs:', error);
+      }
+    };
+    const fetchCustomers = async () => {
+      try {
+        const response = await makeRequest.get('/customer/auth/');
+        console.log('Fetched Customers:', response.data);
+        setCustomer(response.data);
+      } catch (error) {
+        console.error('Error fetching customers:', error);
+      }
+    };
+    fetchTurfs();
+    fetchCustomers();
+  }, []);
+  const totalTurfs = turfs.length;
+  const totalCustomers = customer.length;
   return (
     <>
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-6 xl:grid-cols-3 2xl:gap-7.5">
+      <div className="grid grid-cols-2 gap-4 md:grid-cols-2 md:gap-6 xl:grid-cols-4 2xl:gap-7.5">
         <CardDataStats
-        page='/booking'
-          title="Total Bookings"
-          total={'4000'}
+          page="/turfs"
+          title="Total Turfs"
+          total={totalTurfs}
           rate="0.43%"
           levelUp
         >
@@ -25,16 +66,36 @@ const HomePage: React.FC = () => {
           >
             <path
               stroke="currentColor"
-              strokeLinecap="round"
-              strokeWidth="2"
-              d="M7.111 20A3.111 3.111 0 0 1 4 16.889v-12C4 4.398 4.398 4 4.889 4h4.444a.89.89 0 0 1 .89.889v12A3.111 3.111 0 0 1 7.11 20Zm0 0h12a.889.889 0 0 0 .889-.889v-4.444a.889.889 0 0 0-.889-.89h-4.389a.889.889 0 0 0-.62.253l-3.767 3.665a.933.933 0 0 0-.146.185c-.868 1.433-1.581 1.858-3.078 2.12Zm0-3.556h.009m7.933-10.927 3.143 3.143a.889.889 0 0 1 0 1.257l-7.974 7.974v-8.8l3.574-3.574a.889.889 0 0 1 1.257 0Z"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M6 4h12M6 4v16M6 4H5m13 0v16m0-16h1m-1 16H6m12 0h1M6 20H5M9 7h1v1H9V7Zm5 0h1v1h-1V7Zm-5 4h1v1H9v-1Zm5 0h1v1h-1v-1Zm-3 4h2a1 1 0 0 1 1 1v4h-4v-4a1 1 0 0 1 1-1Z"
             />
           </svg>
         </CardDataStats>
         <CardDataStats
-        page='/payout'
-          title="Total Payout"
-          total={`₹${4000}/-`}
+          page="/bookings"
+          title="Total Bookings"
+          total={`${"unavailable"}`}
+          rate="4.35%"
+          levelUp
+        >
+          <svg
+            className="w-6 h-6 text-gray-800 dark:text-white"
+            aria-hidden="true"
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            fill="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path d="M20 14h-2.722L11 20.278a5.511 5.511 0 0 1-.9.722H20a1 1 0 0 0 1-1v-5a1 1 0 0 0-1-1ZM9 3H4a1 1 0 0 0-1 1v13.5a3.5 3.5 0 1 0 7 0V4a1 1 0 0 0-1-1ZM6.5 18.5a1 1 0 1 1 0-2 1 1 0 0 1 0 2ZM19.132 7.9 15.6 4.368a1 1 0 0 0-1.414 0L12 6.55v9.9l7.132-7.132a1 1 0 0 0 0-1.418Z" />
+          </svg>
+        </CardDataStats>
+        <CardDataStats
+          page="/payout"
+          title="Total Transaction"
+          total={`₹${0}/-`}
           rate="4.35%"
           levelUp
         >
@@ -58,8 +119,8 @@ const HomePage: React.FC = () => {
         </CardDataStats>
         <CardDataStats
           title="Total Customers"
-          page='/customers'
-          total={'277'}
+          page="/customers"
+          total={totalCustomers}
           rate="0.95%"
           levelDown
         >

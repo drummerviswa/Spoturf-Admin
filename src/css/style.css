@@ -11,6 +11,7 @@
 @layer components {
 }
 
+
 @layer utilities {
   /* Chrome, Safari and Opera */
   .no-scrollbar::-webkit-scrollbar {
@@ -31,12 +32,33 @@
 }
 
 /* third-party libraries CSS */
+.today {
+  background-color: #259AE6;
+}
 
 .tableCheckbox:checked ~ div span {
   @apply opacity-100;
 }
 .tableCheckbox:checked ~ div {
   @apply bg-primary border-primary;
+}
+.input-field {
+  width: 100%;
+  border: 1px solid #d1d5db; /* Tailwind gray-300 */
+  border-radius: 0.375rem; /* Tailwind rounded */
+  padding: 0.5rem; /* Tailwind py-2 */
+  background-color: #f9fafb; /* Tailwind gray-50 */
+  color: #374151; /* Tailwind gray-700 */
+  transition: border-color 0.2s ease;
+
+  /* Dark mode support */
+  @apply dark:bg-gray-700 dark:text-white dark:border-gray-600; /* Using Tailwind */
+}
+
+.input-field:focus {
+  border-color: #2563eb; /* Tailwind blue-600 */
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.5); /* Tailwind blue-600 */
 }
 
 .apexcharts-legend-text {

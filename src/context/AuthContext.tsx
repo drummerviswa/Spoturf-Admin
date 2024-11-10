@@ -1,33 +1,62 @@
-import { createContext, ReactNode, useState } from 'react'
-import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import {
+  createContext,
+  useEffect,
+  useState,
+  ReactNode,
+  useContext,
+} from 'react';
 
-type Props = {
-  children?: ReactNode;
+interface AuthContextType {
+  currentUser: any;
+  login: (inputs: any) => Promise<void>;
+  logout: () => Promise<void>;
 }
+export const AuthContext = createContext<AuthContextType | undefined>(
+  undefined,
+);
 
-type IAuthContext = {
-  authenticated: boolean;
-  setAuthenticated: (newState: boolean) => void
-}
+export const AuthProvider = ({ children }: { children: ReactNode }) => {
+  const [currentUser, setCurrentUser] = useState<any | null>(
+    JSON.parse(localStorage.getItem('user')!) || null,
+  );
 
-const initialValue = {
-  authenticated: false,
-  setAuthenticated: () => {}
-}
+  const login = async (inputs: any) => {
+    try {
+      const res = await axios.post('http://localhost:8800/admin/auth/login', inputs, {
+        withCredentials: true,
+      });
+      setCurrentUser(res.data);
+      localStorage.setItem('user', JSON.stringify(res.data));
+    } catch (err) {
+      console.error('Login failed:', err);
+    }
+  };
 
-const AuthContext = createContext<IAuthContext>(initialValue)
+  const logout = async () => {
+    try {
+      await axios.post('http://localhost:8800/admin/auth/logout', {});
+      setCurrentUser(null);
+      localStorage.removeItem('user');
+    } catch (err) {
+      console.error('Logout failed:', err);
+    }
+  };
 
-const AuthProvider = ({children}: Props) => {
-  //Initializing an auth state with false value (unauthenticated)
-  const [ authenticated, setAuthenticated ] = useState(initialValue.authenticated)
-
-  const navigate = useNavigate()
+  useEffect(() => {
+    localStorage.setItem('user', JSON.stringify(currentUser));
+  }, [currentUser]);
 
   return (
-    <AuthContext.Provider value={{authenticated, setAuthenticated}}>
+    <AuthContext.Provider value={{ currentUser, login, logout }}>
       {children}
     </AuthContext.Provider>
-  )
-}
-
-export {  AuthContext, AuthProvider }
+  );
+};
+export const useAuth = () => {
+  const context = useContext(AuthContext);
+  if (context === undefined) {
+    throw new Error('useAuth must be used within an AuthProvider');
+  }
+  return context;
+};

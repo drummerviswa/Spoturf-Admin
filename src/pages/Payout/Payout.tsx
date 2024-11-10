@@ -3,44 +3,68 @@ import PaymentRow from './PaymentRow';
 import * as XLSX from 'xlsx';
 
 interface Payment {
-  plan: string;
-  date: string;
+  turfId: string; // Assuming turf ID is available
+  turfName: string; // Turf Name
+  bookingDate: string;
   amount: string;
   status: string;
 }
 
+interface Turf {
+  id: string;
+  name: string;
+}
+
 const Payout: React.FC = () => {
   const [payments, setPayments] = useState<Payment[]>([]);
+  const [turfOptions, setTurfOptions] = useState<Turf[]>([]);
+  const [selectedTurf, setSelectedTurf] = useState<string>(''); // Selected turf ID
   const [sortOption, setSortOption] = useState<string>('Recent');
+
   useEffect(() => {
+    // Sample data for turfs
+    const sampleTurfs: Turf[] = [
+      { id: '1', name: 'Turf A' },
+      { id: '2', name: 'Turf B' },
+      { id: '3', name: 'Turf C' },
+    ];
+    
+    setTurfOptions(sampleTurfs);
+
+    // Sample payments
     const samplePayments: Payment[] = [
       {
-        plan: 'Standard Plan - Feb 2022',
-        date: '2022-02-07',
+        turfId: '1',
+        turfName: 'Turf A',
+        bookingDate: '2022-02-07',
         amount: '₹59.00',
         status: 'Complete',
       },
       {
-        plan: 'Standard Plan - Jan 2022',
-        date: '2022-01-09',
+        turfId: '2',
+        turfName: 'Turf B',
+        bookingDate: '2022-01-09',
         amount: '₹59.00',
         status: 'Canceled',
       },
       {
-        plan: 'Basic Plan - Dec 2021',
-        date: '2021-12-15',
+        turfId: '1',
+        turfName: 'Turf A',
+        bookingDate: '2021-12-15',
         amount: '₹29.00',
         status: 'Complete',
       },
       {
-        plan: 'Basic Plan - Nov 2021',
-        date: '2021-11-14',
+        turfId: '3',
+        turfName: 'Turf C',
+        bookingDate: '2021-11-14',
         amount: '₹29.00',
         status: 'Pending',
       },
       {
-        plan: 'Basic Plan - Oct 2021',
-        date: '2021-10-15',
+        turfId: '2',
+        turfName: 'Turf B',
+        bookingDate: '2021-10-15',
         amount: '₹29.00',
         status: 'Complete',
       },
@@ -48,14 +72,20 @@ const Payout: React.FC = () => {
 
     setPayments(samplePayments);
   }, []);
-  const sortedPayments = [...payments].sort((a, b) => {
+
+  // Filter payments based on selected turf
+  const filteredPayments = payments.filter(payment => payment.turfId === selectedTurf);
+
+  // Sort payments based on selected sort option
+  const sortedPayments = [...filteredPayments].sort((a, b) => {
     if (sortOption === 'Recent') {
-      return new Date(b.date).getTime() - new Date(a.date).getTime();
+      return new Date(b.bookingDate).getTime() - new Date(a.bookingDate).getTime();
     } else if (sortOption === 'Status') {
       return a.status.localeCompare(b.status);
     }
     return 0;
   });
+
   const exportToXLSX = () => {
     const worksheet = XLSX.utils.json_to_sheet(sortedPayments);
     const workbook = XLSX.utils.book_new();
@@ -68,12 +98,30 @@ const Payout: React.FC = () => {
       <div className="mx-auto mt-8 px-2">
         <div className="sm:flex sm:items-center sm:justify-between flex-col sm:flex-row">
           <p className="flex-1 text-base font-bold text-gray-900 dark:text-white">
-            Latest Payments
+            Latest Payments for Selected Turf
           </p>
 
           <div className="mt-4 sm:mt-0">
             <div className="flex items-center justify-start sm:justify-end">
               <div className="flex items-center">
+                <label className="mr-2 flex-shrink-0 text-sm font-medium text-gray-900 dark:text-white">
+                  Select Turf:
+                </label>
+                <select
+                  className="sm:mr-4 block w-full rounded-lg border p-1 pr-10 text-base outline-none focus:shadow sm:text-sm"
+                  value={selectedTurf}
+                  onChange={e => setSelectedTurf(e.target.value)}
+                >
+                  <option value="">Select a Turf</option>
+                  {turfOptions.map(turf => (
+                    <option key={turf.id} value={turf.id}>
+                      {`${turf.id} - ${turf.name}`}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="flex items-center ml-4">
                 <label className="mr-2 flex-shrink-0 text-sm font-medium text-gray-900 dark:text-white">
                   Sort by:
                 </label>
@@ -117,10 +165,10 @@ const Payout: React.FC = () => {
             <thead className="hidden border-b lg:table-header-group">
               <tr>
                 <td className="py-4 text-sm font-medium text-gray-500 sm:px-6">
-                  Invoice
+                  Turf Name
                 </td>
                 <td className="py-4 text-sm font-medium text-gray-500 sm:px-6">
-                  Date
+                  Booking Date
                 </td>
                 <td className="py-4 text-sm font-medium text-gray-500 sm:px-6">
                   Amount
