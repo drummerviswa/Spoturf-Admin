@@ -19,6 +19,7 @@ import CustomerDetails from './pages/CustomerDetils';
 import Payments from './pages/Payment';
 import SignUp from './pages/Authentication/SignUp';
 import { useAuth } from './context/AuthContext';
+import TurfBookings from './pages/Booking/TurfBookings';
 
 function App() {
   const [loading, setLoading] = useState<boolean>(true);
@@ -99,16 +100,7 @@ function App() {
           element={
             <>
               <PageTitle title="Booking Calendar | Spoturf - Admin" />
-              <Calendar />
-            </>
-          }
-        />
-        <Route
-          path="/booking/:date"
-          element={
-            <>
-              <PageTitle title="Booking Details | Spoturf - Admin" />
-              <BookingDetails />
+              <TurfBookings />
             </>
           }
         />

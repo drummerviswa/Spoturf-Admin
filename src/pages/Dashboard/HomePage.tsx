@@ -51,7 +51,7 @@ const HomePage: React.FC = () => {
         <CardDataStats
           page="/turfs"
           title="Total Turfs"
-          total={totalTurfs}
+          total={totalTurfs||0}
           rate="0.43%"
           levelUp
         >
@@ -74,9 +74,9 @@ const HomePage: React.FC = () => {
           </svg>
         </CardDataStats>
         <CardDataStats
-          page="/bookings"
+          page="/booking"
           title="Total Bookings"
-          total={`${"unavailable"}`}
+          total={`${0}`}
           rate="4.35%"
           levelUp
         >
@@ -120,7 +120,7 @@ const HomePage: React.FC = () => {
         <CardDataStats
           title="Total Customers"
           page="/customers"
-          total={totalCustomers}
+          total={totalCustomers||0}
           rate="0.95%"
           levelDown
         >
