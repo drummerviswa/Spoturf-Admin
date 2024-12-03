@@ -23,7 +23,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const login = async (inputs: any) => {
     try {
-      const res = await axios.post('http://localhost:8800/admin/auth/login', inputs, {
+      const res = await axios.post('https://spoturf-backend.onrender.com/admin/auth/login', inputs, {
         withCredentials: true,
       });
       setCurrentUser(res.data);
@@ -35,7 +35,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const logout = async () => {
     try {
-      await axios.post('http://localhost:8800/admin/auth/logout', {});
+      await axios.post('https://spoturf-backend.onrender.com/admin/auth/logout', {});
       setCurrentUser(null);
       localStorage.removeItem('user');
     } catch (err) {
